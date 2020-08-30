@@ -23,6 +23,10 @@ app.get('/', function (req, res) {
   res.json('Hello World')
 });
 
+app.get('/usuario', function (req, res) {
+  res.json('Hello Usuario')
+});
+
 app.post('/usuario', (req, res) => {
   let body = req.body;
 

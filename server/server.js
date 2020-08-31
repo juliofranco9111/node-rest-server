@@ -1,61 +1,56 @@
 //---------CONFIG---------//
 require('./config/config');
 
-const port = process.env.PORT;
-
-
-//---------express---------//
+//---------requires---------//
 const express = require('express');
+const mongoose = require('mongoose');
+
+
+//---------executes---------//
+
 const app = express();
+const port = process.env.PORT;
 
 
 //---------Body parser-----------//
 const bodyParser = require('body-parser');
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
- 
+
 // parse application/json
 app.use(bodyParser.json())
 
 
+
+//---------Import rutas de usuario---------//
+app.use(require('./routes/usuario'));
+
+
+
+
 //--------Express services----------//
-app.get('/', function (req, res) {
-  res.json('Hello World')
-});
 
-app.get('/usuario', function (req, res) {
-  res.json('Hello Usuario')
-});
 
-app.post('/usuario', (req, res) => {
-  let body = req.body;
 
-  if( body.name === undefined){
-    //probando los codigos de status http
-    res.status(400).json({
-      ok:false,
-      message: 'El nombre es necesario'
-    })
-  }else{
-    res.json({user: body});
-  }
+/* --------Conexion a la BD---------- */
 
-});
+mongoose.connect(process.env.URLDB,{
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+  useCreateIndex: true
+}, (err, res) => {
 
-app.put('/usuario/:id', (req, res) => {
+  if (err) throw err;
 
-  let id = req.params.id;
+  console.log('++++Database connected++++')
 
-  res.json({
-    nombre: "usuario",
-    id
-  })
-});
+},);
 
-app.delete('/usuario', (req, res) => {
-  res.json('DELETE usuario')
-});
+
+
+
 
 app.listen(port, () => {
-  console.log(`Listening on port: ${port}`)
+  console.log(`-----Listening on port: ${port}----`)
 })

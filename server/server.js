@@ -22,15 +22,9 @@ app.use(bodyParser.json())
 
 
 
-//---------Import rutas de usuario---------//
-app.use(require('./routes/usuario'));
+//---------Import global de rutas---------//
 
-
-
-
-//--------Express services----------//
-
-
+app.use(require('./routes/index'));
 
 /* --------Conexion a la BD---------- */
 
@@ -41,15 +35,13 @@ mongoose.connect(process.env.URLDB,{
   useCreateIndex: true
 }, (err, res) => {
 
-  if (err) throw err;
+  if (err) {
+    return console.log('error', err)
+  };
 
   console.log('++++Database connected++++')
 
-},);
-
-
-
-
+});
 
 app.listen(port, () => {
   console.log(`-----Listening on port: ${port}----`)

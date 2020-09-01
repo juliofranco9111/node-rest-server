@@ -7,7 +7,8 @@ const bcrypt = require('bcrypt');
 const _ = require('underscore');
 
 const Usuario = require('../models/usuario');
-
+//middleware
+const { verificaToken, verificaAdminRole } = require('../middlewares/autentication')
 
 const app = express();
 
@@ -18,7 +19,7 @@ app.get('/', function (req, res) {
 
 
 
-app.get('/usuarios', function (req, res) {
+app.get('/usuarios', verificaToken, (req, res) => {
 
    let from = req.query.from || 0;
    from = Number(from);
@@ -26,7 +27,7 @@ app.get('/usuarios', function (req, res) {
    let limit = req.query.limit || 5;
    limit = Number(limit);
 
-   Usuario.find({ estado:true })
+   Usuario.find({ estado: true })
       .skip(from)
       .limit(limit)
       .exec((err, usuarios) => {
@@ -38,7 +39,7 @@ app.get('/usuarios', function (req, res) {
             });
          }
 
-         Usuario.countDocuments({estado:true}, (err, conteo) => {
+         Usuario.countDocuments({ estado: true }, (err, conteo) => {
 
             res.json({
                ok: true,
@@ -55,7 +56,7 @@ app.get('/usuarios', function (req, res) {
 
 });
 
-app.post('/usuario', (req, res) => {
+app.post('/usuario', [verificaToken, verificaAdminRole], (req, res) => {
    let body = req.body;
 
    let usuario = new Usuario({
@@ -87,7 +88,7 @@ app.post('/usuario', (req, res) => {
 
 });
 
-app.put('/usuario/:id', (req, res) => {
+app.put('/usuario/:id', [verificaToken, verificaAdminRole], (req, res) => {
 
    let id = req.params.id;
    let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']);
@@ -114,7 +115,7 @@ app.put('/usuario/:id', (req, res) => {
 
 });
 
-app.delete('/usuario/:id', (req, res) => {
+app.delete('/usuario/:id', [verificaToken, verificaAdminRole], (req, res) => {
 
 
    let id = req.params.id;
